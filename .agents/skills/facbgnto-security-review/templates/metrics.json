@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "project": "",
+  "module": "",
+  "repository": "",
+  "branch": "",
+  "commit": "",
+  "reviewDate": "",
+  "coverage": {
+    "filesReviewed": 0,
+    "linesInspected": 0,
+    "endpointsReviewed": 0,
+    "controllersReviewed": 0,
+    "middlewaresReviewed": 0,
+    "servicesReviewed": 0,
+    "modelsReviewed": 0,
+    "migrationsReviewed": 0,
+    "sqlQueriesReviewed": 0,
+    "dependenciesReviewed": 0,
+    "workflowsReviewed": 0,
+    "falsePositivesDiscarded": 0,
+    "correctControlsObserved": 0
+  },
+  "findings": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "informational": 0,
+    "confirmed": 0,
+    "potential": 0,
+    "corrected": 0,
+    "accepted": 0
+  },
+  "risk": {
+    "global": "",
+    "confidence": "",
+    "residual": ""
+  },
+  "status": ""
+}

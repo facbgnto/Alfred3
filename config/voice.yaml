@@ -1,0 +1,8 @@
+wake_words: [alfred]
+language: es
+sample_rate: 16000
+vad_aggressiveness: 2
+silence_ms: 900
+awake_timeout_seconds: 35
+stt_model: small
+tts_engine: pyttsx3

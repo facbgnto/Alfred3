@@ -1,0 +1,15 @@
+{
+  "name": "alfred-3",
+  "private": true,
+  "version": "3.0.0",
+  "workspaces": ["apps/api", "apps/web"],
+  "scripts": {
+    "dev": "concurrently -n API,WEB -c cyan,magenta \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
+    "build": "npm run build -w apps/api && npm run build -w apps/web",
+    "start": "npm run start -w apps/api",
+    "install:all": "npm install && python -m venv apps/voice-service/.venv",
+    "voice": "python apps/voice-service/run.py",
+    "doctor": "node scripts/doctor.mjs"
+  },
+  "devDependencies": {"concurrently": "^9.1.2"}
+}

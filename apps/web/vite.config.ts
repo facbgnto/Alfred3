@@ -1,0 +1,1 @@
+import {defineConfig} from 'vite';import react from '@vitejs/plugin-react';export default defineConfig({plugins:[react()],server:{proxy:{'/api':'http://localhost:34777','/health':'http://localhost:34777','/ws':{target:'ws://localhost:34777',ws:true}}}})

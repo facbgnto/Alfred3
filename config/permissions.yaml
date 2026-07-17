@@ -1,0 +1,6 @@
+levels:
+  read_only: [system.status, tasks.list, memory.search]
+  workspace_write: [tasks.create, files.write_workspace, git.commit]
+  system_admin: [system.command, git.push, packages.install]
+default: read_only
+require_confirmation: [workspace_write, system_admin]
