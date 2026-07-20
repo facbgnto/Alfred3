@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Activity,
   Brain,
@@ -45,6 +45,7 @@ export default function App() {
   const [listeningEnabled, setListeningEnabled] = useState(false);
   const [diagnostics, setDiagnostics] = useState<VoiceDiagnostics | null>(null);
   const [diagnosticsLoading, setDiagnosticsLoading] = useState(false);
+  const chatRef = useRef<HTMLDivElement>(null);
   const recorder = useVoiceRecorder(result => {
     if (result.text) setMessages(current => [...current, { role: 'user', text: result.text }]);
     if (result.response) setMessages(current => [...current, { role: 'assistant', text: result.response }]);
@@ -72,6 +73,12 @@ export default function App() {
       clearInterval(interval);
     };
   }, []);
+
+  useEffect(() => {
+    const node = chatRef.current;
+    if (!node) return;
+    node.scrollTop = node.scrollHeight;
+  }, [messages]);
 
   useEffect(() => {
     if (!listeningEnabled) return;
@@ -223,7 +230,7 @@ export default function App() {
             </label>
           </div>
 
-          <div className="chat" aria-live="polite">
+          <div className="chat" aria-live="polite" ref={chatRef}>
             {messages.map((message, index) => (
               <div key={`${message.role}-${index}`} className={`msg ${message.role}`}>
                 <b>{message.role === 'assistant' ? 'ALFRED' : 'FELIPE'}</b>

@@ -1,4 +1,26 @@
 const SENTENCE_END = /([.!?;:]+)(\s+|$)/g;
+const COMPLETE_SENTENCE_BOUNDARY = /[.!?]+["')\]]?\s+/g;
+
+/**
+ * Extrae oraciones ya cerradas de un buffer que sigue creciendo (streaming de LLM).
+ * Solo corta cuando hay signo de puntuacion seguido de espacio, para no partir
+ * una oracion que todavia puede seguir creciendo. El resto queda en `rest`.
+ */
+export function extractCompleteSentences(buffer: string): { sentences: string[]; rest: string } {
+  COMPLETE_SENTENCE_BOUNDARY.lastIndex = 0;
+  const sentences: string[] = [];
+  let start = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = COMPLETE_SENTENCE_BOUNDARY.exec(buffer)) !== null) {
+    const end = match.index + match[0].length;
+    const candidate = buffer.slice(start, end).trim();
+    if (candidate) sentences.push(candidate);
+    start = end;
+  }
+
+  return { sentences, rest: buffer.slice(start) };
+}
 
 export function splitIntoSpeakableSentences(text: string, minLength = 32): string[] {
   const normalized = text.replace(/\s+/g, ' ').trim();

@@ -7,6 +7,8 @@ type AlfredEvent = {
   payload?: {
     state?: VoiceState;
     reason?: string;
+    audioBase64?: string;
+    mimeType?: string;
     [key: string]: unknown;
   };
 };
@@ -21,6 +23,38 @@ export function useAlfredSocket() {
   const retriesRef = useRef(0);
   const maxRetries = 5;
   const retryDelay = 2000;
+
+  const audioQueueRef = useRef<{ audioBase64: string; mimeType: string }[]>([]);
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const playingRef = useRef(false);
+
+  function stopPlayback() {
+    audioQueueRef.current = [];
+    playingRef.current = false;
+    const audio = currentAudioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.src = '';
+    currentAudioRef.current = null;
+  }
+
+  function playNext() {
+    const next = audioQueueRef.current.shift();
+    if (!next) {
+      playingRef.current = false;
+      return;
+    }
+    playingRef.current = true;
+    const audio = new Audio(`data:${next.mimeType};base64,${next.audioBase64}`);
+    currentAudioRef.current = audio;
+    const advance = () => {
+      currentAudioRef.current = null;
+      playNext();
+    };
+    audio.onended = advance;
+    audio.onerror = advance;
+    void audio.play().catch(advance);
+  }
 
   useEffect(() => {
     let disposed = false;
@@ -47,6 +81,14 @@ export function useAlfredSocket() {
           if (payload.type === 'voice.state.changed') {
             setState(payload.payload?.state ?? 'offline');
             setLastReason(payload.payload?.reason ?? '');
+          } else if (payload.type === 'tts.audio' && payload.payload?.audioBase64) {
+            audioQueueRef.current.push({
+              audioBase64: payload.payload.audioBase64,
+              mimeType: payload.payload.mimeType ?? 'audio/wav',
+            });
+            if (!playingRef.current) playNext();
+          } else if (payload.type === 'voice.interrupted') {
+            stopPlayback();
           }
         } catch {
           setLastEvent('Evento invalido');
@@ -74,6 +116,7 @@ export function useAlfredSocket() {
 
     return () => {
       disposed = true;
+      stopPlayback();
       if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
       const ws = wsRef.current;
       if (!ws) return;

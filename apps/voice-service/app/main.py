@@ -1,5 +1,6 @@
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+import base64
 import os
 import time
 
@@ -9,7 +10,7 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 
 from .config import settings
 from .transcriber import get_transcriber
-from .tts import speak, tts_engine
+from .tts import tts_engine
 
 app = FastAPI(title="ALFRED Voice Service", version="3.0.0")
 
@@ -85,8 +86,13 @@ async def process(file: UploadFile = File(...)):
         raise HTTPException(response.status_code, response.text)
 
     answer = response.json()["response"]
-    speak(answer)
-    return {"text": text, "response": answer}
+    audio = tts_engine.synthesize(answer)
+    return {
+        "text": text,
+        "response": answer,
+        "audioBase64": base64.b64encode(audio).decode("ascii") if audio else None,
+        "audioMimeType": "audio/wav",
+    }
 
 
 @app.get("/tts/health")
@@ -97,8 +103,13 @@ def tts_health():
 @app.post("/tts/speak")
 def tts_speak(payload: SpeakRequest):
     try:
-        tts_engine.speak(payload.text, payload.speed)
-        return {"ok": True, "provider": "pyttsx3"}
+        audio = tts_engine.synthesize(payload.text, payload.speed)
+        return {
+            "ok": True,
+            "provider": "pyttsx3",
+            "audioBase64": base64.b64encode(audio).decode("ascii") if audio else None,
+            "audioMimeType": "audio/wav",
+        }
     except Exception as exc:
         raise HTTPException(status_code=503, detail=f"TTS no disponible: {exc}") from exc
 

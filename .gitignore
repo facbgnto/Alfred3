@@ -3,6 +3,7 @@ dist/
 apps/*/dist/
 .venv/
 apps/voice-service/.venv/
+apps/voice-service/voices/
 __pycache__/
 *.pyc
 *.tsbuildinfo

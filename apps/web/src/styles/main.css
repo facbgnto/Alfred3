@@ -301,14 +301,29 @@ h1 b {
 
 .chat {
   flex: 1;
-  overflow: auto;
-  padding: 10px 8px;
   min-height: 240px;
+  max-height: 46vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 10px 8px;
+  scroll-behavior: smooth;
 }
 
 .msg {
   max-width: 82%;
   margin: 14px 0;
+  animation: msg-in .3s ease-out;
+}
+
+@keyframes msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .msg.user {

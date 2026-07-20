@@ -1,5 +1,14 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import { z } from 'zod';
+
+// npm workspaces ejecutan este proceso con cwd=apps/api, donde no hay .env,
+// asi que dotenv/config (basado en cwd) nunca encontraba el .env de la raiz
+// del repo y todo corria silenciosamente con los defaults del schema de abajo.
+const repoRootEnv = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../.env');
+dotenv.config({ path: repoRootEnv });
+dotenv.config();
 
 const csv = z
   .string()

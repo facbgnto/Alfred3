@@ -39,7 +39,7 @@ export async function processMessage(message: string, channel = 'desktop', agent
         role: entry.role,
         content: entry.content,
       })),
-      { role: 'user' as const, content: clean },
+      ...(agent.memoryEnabled ? [] : [{ role: 'user' as const, content: clean }]),
     ];
     const result = await chatWithMetrics(messages, channel);
     if (agent.memoryEnabled) {

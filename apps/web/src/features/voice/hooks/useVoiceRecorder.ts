@@ -13,7 +13,9 @@ const silenceMs = 900;
 const maxRecordingMs = 30000;
 const noSpeechTimeoutMs = 12000;
 
-export function useVoiceRecorder(onResult: (result: { text: string; response: string }) => void) {
+type VoiceResult = { text: string; response: string };
+
+export function useVoiceRecorder(onResult: (result: VoiceResult) => void) {
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [status, setStatus] = useState<RecorderStatus>('idle');
@@ -33,22 +35,33 @@ export function useVoiceRecorder(onResult: (result: { text: string; response: st
   const startedAtRef = useRef(0);
   const stoppingRef = useRef(false);
 
-  useEffect(() => {
-    async function loadDevices() {
-      if (!navigator.mediaDevices?.enumerateDevices) return;
-      const items = await navigator.mediaDevices.enumerateDevices();
-      const microphones = items
-        .filter(item => item.kind === 'audioinput')
-        .map((item, index) => ({
-          deviceId: item.deviceId,
-          label: item.label || `Microfono ${index + 1}`,
-        }));
-      setDevices(microphones);
-      if (!selectedDeviceId && microphones[0]) setSelectedDeviceId(microphones[0].deviceId);
-    }
+  const selectedDeviceIdRef = useRef(selectedDeviceId);
+  selectedDeviceIdRef.current = selectedDeviceId;
 
+  async function loadDevices() {
+    if (!navigator.mediaDevices?.enumerateDevices) return;
+    const items = await navigator.mediaDevices.enumerateDevices();
+    const microphones = items
+      .filter(item => item.kind === 'audioinput')
+      .map((item, index) => ({
+        deviceId: item.deviceId,
+        label: item.label || `Microfono ${index + 1}`,
+      }));
+    setDevices(microphones);
+    const stillPresent = microphones.some(device => device.deviceId === selectedDeviceIdRef.current);
+    if ((!selectedDeviceIdRef.current || !stillPresent) && microphones[0]) {
+      setSelectedDeviceId(microphones[0].deviceId);
+    }
+  }
+
+  useEffect(() => {
     void loadDevices();
-  }, [selectedDeviceId]);
+
+    if (!navigator.mediaDevices?.addEventListener) return;
+    const handleChange = () => void loadDevices();
+    navigator.mediaDevices.addEventListener('devicechange', handleChange);
+    return () => navigator.mediaDevices.removeEventListener('devicechange', handleChange);
+  }, []);
 
   function cleanupAudio() {
     if (animationRef.current !== null) cancelAnimationFrame(animationRef.current);
@@ -197,6 +210,7 @@ export function useVoiceRecorder(onResult: (result: { text: string; response: st
       });
 
       streamRef.current = stream;
+      void loadDevices();
       const AudioContextClass = window.AudioContext || (window as typeof window & {
         webkitAudioContext?: typeof AudioContext;
       }).webkitAudioContext;

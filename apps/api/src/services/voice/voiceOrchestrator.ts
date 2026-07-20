@@ -6,7 +6,8 @@ import { appendTrace } from '../traces/traceStore.js';
 import { executeTool } from '../tools/registry.js';
 import { transcribeAudio } from './sttClient.js';
 import { voiceSessionManager } from './session/voiceSessionManager.js';
-import { cancelTts, speakText } from './tts/ttsClient.js';
+import { cancelTts, speakSentence } from './tts/ttsClient.js';
+import { extractCompleteSentences } from './tts/sentenceSplitter.js';
 
 type ProcessVoiceInput =
   | { kind: 'text'; text: string; sessionId?: string }
@@ -68,7 +69,6 @@ export async function processVoiceTurn(input: ProcessVoiceInput) {
         role: entry.role,
         content: entry.content,
       })),
-      { role: 'user' as const, content: text },
     ];
 
     voiceSessionManager.setState(session.requestId, 'thinking', 'ollama-processing');
@@ -76,6 +76,32 @@ export async function processVoiceTurn(input: ProcessVoiceInput) {
     let firstTokenMarked = false;
     let responseText = '';
     let responseModel = 'unknown';
+
+    // Habla oracion por oracion apenas el LLM las termina de escribir, en vez de
+    // esperar a que toda la respuesta este generada. Las llamadas a TTS se
+    // encolan en orden pero no bloquean el consumo de mas tokens del LLM.
+    let pendingSpeech = '';
+    let sentenceIndex = 0;
+    let speechChain: Promise<void> = Promise.resolve();
+    let firstAudioMarked = false;
+    const ttsStarted = performance.now();
+
+    function enqueueSentence(sentence: string) {
+      const trimmed = sentence.trim();
+      if (!trimmed) return;
+      const index = sentenceIndex++;
+      speechChain = speechChain.then(async () => {
+        if (!voiceSessionManager.isActive(session.requestId)) return;
+        if (!firstAudioMarked) {
+          firstAudioMarked = true;
+          voiceSessionManager.setState(session.requestId, 'speaking', 'tts-speaking');
+        }
+        await speakSentence(trimmed, index, {
+          requestId: session.requestId,
+          signal: session.abortController.signal,
+        });
+      }).catch(() => undefined);
+    }
 
     try {
       for await (const chunk of chatStream({
@@ -97,11 +123,21 @@ export async function processVoiceTurn(input: ProcessVoiceInput) {
             requestId: session.requestId,
             token: chunk.content,
           });
+
+          pendingSpeech += chunk.content;
+          const { sentences, rest } = extractCompleteSentences(pendingSpeech);
+          pendingSpeech = rest;
+          for (const sentence of sentences) enqueueSentence(sentence);
         }
       }
     } catch {
-      responseText = await chat(messages, 'voice', session.abortController.signal);
+      if (!firstTokenMarked) {
+        responseText = await chat(messages, 'voice', session.abortController.signal);
+        pendingSpeech = responseText;
+      }
     }
+
+    if (pendingSpeech.trim()) enqueueSentence(pendingSpeech);
 
     const llmTotalMs = performance.now() - llmStarted;
     voiceSessionManager.markMetric(session.requestId, 'llmTotalMs', llmTotalMs);
@@ -131,10 +167,10 @@ export async function processVoiceTurn(input: ProcessVoiceInput) {
     });
 
     if (voiceSessionManager.isActive(session.requestId)) {
-      voiceSessionManager.setState(session.requestId, 'speaking', 'tts-speaking');
-      await speakText(responseText, {
+      await speechChain;
+      eventBus.emit('tts.completed', {
         requestId: session.requestId,
-        signal: session.abortController.signal,
+        ttsTotalMs: Math.round(performance.now() - ttsStarted),
       });
     }
 
