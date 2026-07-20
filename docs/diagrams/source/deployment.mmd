@@ -1,0 +1,13 @@
+flowchart TB
+    browser[Navegador]
+    proxy[Reverse proxy]
+    frontend[Frontend]
+    backend[Backend]
+    database[(Base de datos)]
+    storage[(Almacenamiento)]
+
+    browser --> proxy
+    proxy --> frontend
+    proxy --> backend
+    backend --> database
+    backend --> storage

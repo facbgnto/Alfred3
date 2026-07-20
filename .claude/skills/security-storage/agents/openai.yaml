@@ -1,0 +1,7 @@
+interface:
+  display_name: "Security Storage Auditor"
+  short_description: "Audits unsafe auth and browser storage"
+  default_prompt: "Use $security-storage to audit this frontend, backend, or authentication change for unsafe token, personal data, and browser storage practices."
+
+policy:
+  allow_implicit_invocation: true

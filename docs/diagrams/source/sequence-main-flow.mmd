@@ -1,0 +1,13 @@
+sequenceDiagram
+    actor User as Usuario
+    participant UI as Frontend
+    participant API as Backend
+    participant DB as Base de datos
+
+    User->>UI: Ejecuta acción
+    UI->>API: Solicitud
+    API->>API: Autentica y autoriza
+    API->>DB: Consulta o transacción
+    DB-->>API: Resultado
+    API-->>UI: Respuesta
+    UI-->>User: Confirmación

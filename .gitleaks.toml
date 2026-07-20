@@ -1,0 +1,11 @@
+title = "FACBGNTO Gitleaks configuration"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Ejemplos y plantillas"
+paths = [
+  '''\.env\.example$''',
+  '''templates/'''
+]

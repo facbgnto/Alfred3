@@ -1,0 +1,58 @@
+# Dependencias
+node_modules/
+vendor/
+.venv/
+venv/
+__pycache__/
+
+# Compilados y temporales
+dist/
+build/
+coverage/
+.cache/
+tmp/
+temp/
+logs/
+*.log
+
+# Control de versiones y editores
+.git/
+.github/
+.vscode/
+.idea/
+
+# Secretos y configuración local
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Archivos grandes o generados
+uploads/
+backups/
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.sql
+*.sqlite
+*.db
+
+# Salidas de herramientas
+graphify-out/
+.graphify/
+lightrag_storage/
+rag_storage/
+
+# Multimedia no requerida para análisis de código
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.svg
+*.pdf

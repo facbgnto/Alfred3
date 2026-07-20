@@ -1,0 +1,322 @@
+{
+  ".agents/skills/facbgnto-security-review/templates/metrics.json": {
+    "mtime": 1784296061.686815,
+    "ast_hash": "73f3e67d042130b3052b92068b2b8e93",
+    "semantic_hash": "73f3e67d042130b3052b92068b2b8e93"
+  },
+  ".claude/plugins/headroom/.claude-plugin/plugin.json": {
+    "mtime": 1784296061.6876352,
+    "ast_hash": "ed2261a629b1e71c958a18a7125b6f82",
+    "semantic_hash": "ed2261a629b1e71c958a18a7125b6f82"
+  },
+  ".claude/plugins/headroom/hooks/hooks.json": {
+    "mtime": 1784296061.6876352,
+    "ast_hash": "fcee637c4566b9e7ec54e1f363cacc8f",
+    "semantic_hash": "fcee637c4566b9e7ec54e1f363cacc8f"
+  },
+  ".claude/settings.local.json": {
+    "mtime": 1784296585.8093772,
+    "ast_hash": "35d036474d68af651058da3f5bd60c6f",
+    "semantic_hash": "35d036474d68af651058da3f5bd60c6f"
+  },
+  ".claude/skills/facbgnto-security-review/templates/metrics.json": {
+    "mtime": 1784296061.688285,
+    "ast_hash": "73f3e67d042130b3052b92068b2b8e93",
+    "semantic_hash": "73f3e67d042130b3052b92068b2b8e93"
+  },
+  "apps/api/package.json": {
+    "mtime": 1784296061.6893969,
+    "ast_hash": "2eb61700d68b7739d4644401febb4541",
+    "semantic_hash": "2eb61700d68b7739d4644401febb4541"
+  },
+  "apps/api/src/config/env.test.ts": {
+    "mtime": 1784296061.6894767,
+    "ast_hash": "1b5de746bbc25ddb92fd584c9a9bf607",
+    "semantic_hash": "1b5de746bbc25ddb92fd584c9a9bf607"
+  },
+  "apps/api/src/config/env.ts": {
+    "mtime": 1784296061.6895626,
+    "ast_hash": "85b71a36b28a500338a97f6c61c00055",
+    "semantic_hash": "85b71a36b28a500338a97f6c61c00055"
+  },
+  "apps/api/src/core/agents.test.ts": {
+    "mtime": 1784296061.6895626,
+    "ast_hash": "c9dccfd73a9b311e7d12ec2d6aff1374",
+    "semantic_hash": "c9dccfd73a9b311e7d12ec2d6aff1374"
+  },
+  "apps/api/src/core/agents.ts": {
+    "mtime": 1784296061.6896896,
+    "ast_hash": "d74d6aaa306dab55fe54bef8436b60e6",
+    "semantic_hash": "d74d6aaa306dab55fe54bef8436b60e6"
+  },
+  "apps/api/src/core/assistant.ts": {
+    "mtime": 1784296061.6896896,
+    "ast_hash": "05bd06a27a3f818b570dcb9c577e18cf",
+    "semantic_hash": "05bd06a27a3f818b570dcb9c577e18cf"
+  },
+  "apps/api/src/core/eventBus.ts": {
+    "mtime": 1784296061.6896896,
+    "ast_hash": "3d0f48fff0758c21824a91f930f5f2e8",
+    "semantic_hash": "3d0f48fff0758c21824a91f930f5f2e8"
+  },
+  "apps/api/src/core/stateMachine.ts": {
+    "mtime": 1784296061.6896896,
+    "ast_hash": "8a493e3ac4aefe71ff1bc7717d5c8a92",
+    "semantic_hash": "8a493e3ac4aefe71ff1bc7717d5c8a92"
+  },
+  "apps/api/src/routes/http.ts": {
+    "mtime": 1784296061.6896896,
+    "ast_hash": "4c0c8001c65acbdd64f091fd791104fd",
+    "semantic_hash": "4c0c8001c65acbdd64f091fd791104fd"
+  },
+  "apps/api/src/server.ts": {
+    "mtime": 1784296061.6896896,
+    "ast_hash": "09f403038102a73a322c59117511eacd",
+    "semantic_hash": "09f403038102a73a322c59117511eacd"
+  },
+  "apps/api/src/services/db.ts": {
+    "mtime": 1784296061.6896896,
+    "ast_hash": "a34168d51f9064e89b0f41ae019411f3",
+    "semantic_hash": "a34168d51f9064e89b0f41ae019411f3"
+  },
+  "apps/api/src/services/memory/localMemory.ts": {
+    "mtime": 1784296061.6901033,
+    "ast_hash": "34356765df122b44bed079cbbad2f807",
+    "semantic_hash": "34356765df122b44bed079cbbad2f807"
+  },
+  "apps/api/src/services/ollama.ts": {
+    "mtime": 1784296061.6901033,
+    "ast_hash": "5dc1791d989d50b964bebb73d66df607",
+    "semantic_hash": "5dc1791d989d50b964bebb73d66df607"
+  },
+  "apps/api/src/services/tools/registry.ts": {
+    "mtime": 1784296061.6901033,
+    "ast_hash": "925e053d1b1fe433540e7dbdc210837d",
+    "semantic_hash": "925e053d1b1fe433540e7dbdc210837d"
+  },
+  "apps/api/src/services/traces/traceStore.ts": {
+    "mtime": 1784296061.6901033,
+    "ast_hash": "0db034a860c5e2d14bfbcef327ac51cf",
+    "semantic_hash": "0db034a860c5e2d14bfbcef327ac51cf"
+  },
+  "apps/api/src/services/voice/diagnostics.ts": {
+    "mtime": 1784296061.6902852,
+    "ast_hash": "c493dd31181e1dc3a0e7ef1a54b86dd0",
+    "semantic_hash": "c493dd31181e1dc3a0e7ef1a54b86dd0"
+  },
+  "apps/api/src/services/voice/errors.ts": {
+    "mtime": 1784296061.6902852,
+    "ast_hash": "01775fa99252d09b6a2418e70d45d138",
+    "semantic_hash": "01775fa99252d09b6a2418e70d45d138"
+  },
+  "apps/api/src/services/voice/session/voiceSessionManager.test.ts": {
+    "mtime": 1784296061.6902852,
+    "ast_hash": "bfc953faa16f1e906e2256286f7efbfa",
+    "semantic_hash": "bfc953faa16f1e906e2256286f7efbfa"
+  },
+  "apps/api/src/services/voice/session/voiceSessionManager.ts": {
+    "mtime": 1784296061.690669,
+    "ast_hash": "1902589116ff6743028f6a4be2c3f185",
+    "semantic_hash": "1902589116ff6743028f6a4be2c3f185"
+  },
+  "apps/api/src/services/voice/sttClient.test.ts": {
+    "mtime": 1784296061.690669,
+    "ast_hash": "f68fc6143250398439d9e22381c4d78e",
+    "semantic_hash": "f68fc6143250398439d9e22381c4d78e"
+  },
+  "apps/api/src/services/voice/sttClient.ts": {
+    "mtime": 1784296061.690669,
+    "ast_hash": "b21e04f48bcbb6edd542bfbbc4cf00e9",
+    "semantic_hash": "b21e04f48bcbb6edd542bfbbc4cf00e9"
+  },
+  "apps/api/src/services/voice/tts/sentenceSplitter.test.ts": {
+    "mtime": 1784296061.690669,
+    "ast_hash": "42ade611773363f771d0600424c7ba52",
+    "semantic_hash": "42ade611773363f771d0600424c7ba52"
+  },
+  "apps/api/src/services/voice/tts/sentenceSplitter.ts": {
+    "mtime": 1784296061.6909046,
+    "ast_hash": "a6711a25bce9b8b35f6454c7231cbd9f",
+    "semantic_hash": "a6711a25bce9b8b35f6454c7231cbd9f"
+  },
+  "apps/api/src/services/voice/tts/ttsClient.ts": {
+    "mtime": 1784296061.6909046,
+    "ast_hash": "666f8a9101e0ec202a88ddffa831bccc",
+    "semantic_hash": "666f8a9101e0ec202a88ddffa831bccc"
+  },
+  "apps/api/src/services/voice/voiceOrchestrator.ts": {
+    "mtime": 1784296061.6909046,
+    "ast_hash": "520d775a3a8b23788858963a504066bb",
+    "semantic_hash": "520d775a3a8b23788858963a504066bb"
+  },
+  "apps/api/src/skills/registry.test.ts": {
+    "mtime": 1784296061.6909046,
+    "ast_hash": "b6c7082fdc29a84659fbb33c3f28f73d",
+    "semantic_hash": "b6c7082fdc29a84659fbb33c3f28f73d"
+  },
+  "apps/api/src/skills/registry.ts": {
+    "mtime": 1784296061.6911597,
+    "ast_hash": "1613b74daea262f855b7103690b87029",
+    "semantic_hash": "1613b74daea262f855b7103690b87029"
+  },
+  "apps/api/src/types/events.ts": {
+    "mtime": 1784296061.6911597,
+    "ast_hash": "f018ac902d69fd0b929f3dcb5d15ed36",
+    "semantic_hash": "f018ac902d69fd0b929f3dcb5d15ed36"
+  },
+  "apps/api/src/types/voice.ts": {
+    "mtime": 1784296061.6912827,
+    "ast_hash": "0fe6da3a65c66640f76c669c3798de35",
+    "semantic_hash": "0fe6da3a65c66640f76c669c3798de35"
+  },
+  "apps/api/tsconfig.json": {
+    "mtime": 1784296061.6912827,
+    "ast_hash": "5903feef7efbd33ebb5061784ab66655",
+    "semantic_hash": "5903feef7efbd33ebb5061784ab66655"
+  },
+  "apps/voice-service/app/config.py": {
+    "mtime": 1784296061.6914532,
+    "ast_hash": "60d8db94f197786c0534b6ed857a2f96",
+    "semantic_hash": "60d8db94f197786c0534b6ed857a2f96"
+  },
+  "apps/voice-service/app/main.py": {
+    "mtime": 1784296061.6915476,
+    "ast_hash": "267b922c446afe958716fd3feb23b13a",
+    "semantic_hash": "267b922c446afe958716fd3feb23b13a"
+  },
+  "apps/voice-service/app/transcriber.py": {
+    "mtime": 1784296061.6915476,
+    "ast_hash": "65601f22ef550f6ba202a9880551f404",
+    "semantic_hash": "65601f22ef550f6ba202a9880551f404"
+  },
+  "apps/voice-service/app/tts.py": {
+    "mtime": 1784296061.6915476,
+    "ast_hash": "1132006f7926dd70a33aafe677addadd",
+    "semantic_hash": "1132006f7926dd70a33aafe677addadd"
+  },
+  "apps/voice-service/microphone_listener.py": {
+    "mtime": 1784296061.6915476,
+    "ast_hash": "432f1f83e0ce64df4501cbe293c45a53",
+    "semantic_hash": "432f1f83e0ce64df4501cbe293c45a53"
+  },
+  "apps/voice-service/run.py": {
+    "mtime": 1784296061.6915476,
+    "ast_hash": "1e10ff7829951ce53d5e53cd11b00778",
+    "semantic_hash": "1e10ff7829951ce53d5e53cd11b00778"
+  },
+  "apps/web/package.json": {
+    "mtime": 1784296061.6919167,
+    "ast_hash": "24e4af1dfb55e2725689df509a0fead5",
+    "semantic_hash": "24e4af1dfb55e2725689df509a0fead5"
+  },
+  "apps/web/public/audio-recorder-worklet.js": {
+    "mtime": 1784296061.6919167,
+    "ast_hash": "4168f3d33b5c70133b92559b019079e6",
+    "semantic_hash": "4168f3d33b5c70133b92559b019079e6"
+  },
+  "apps/web/src/App.tsx": {
+    "mtime": 1784296061.692138,
+    "ast_hash": "95180da66e817011856189c82bb8029e",
+    "semantic_hash": "95180da66e817011856189c82bb8029e"
+  },
+  "apps/web/src/features/voice/components/VoiceDiagnosticsPanel.tsx": {
+    "mtime": 1784296061.6923954,
+    "ast_hash": "caa73b19d0e2bc6b56d0670436755a4c",
+    "semantic_hash": "caa73b19d0e2bc6b56d0670436755a4c"
+  },
+  "apps/web/src/features/voice/hooks/useVoiceRecorder.ts": {
+    "mtime": 1784296061.6923954,
+    "ast_hash": "2dfa337c0bc1915db7856ea3ef553cc3",
+    "semantic_hash": "2dfa337c0bc1915db7856ea3ef553cc3"
+  },
+  "apps/web/src/features/voice/services/voiceApi.ts": {
+    "mtime": 1784296061.6923954,
+    "ast_hash": "23ff7b65b600cb9f2278aa89114d317a",
+    "semantic_hash": "23ff7b65b600cb9f2278aa89114d317a"
+  },
+  "apps/web/src/features/voice/types/voice.ts": {
+    "mtime": 1784296061.6923954,
+    "ast_hash": "30ce7255570d0011dca695bdb82d5a7b",
+    "semantic_hash": "30ce7255570d0011dca695bdb82d5a7b"
+  },
+  "apps/web/src/hooks/useAlfredSocket.ts": {
+    "mtime": 1784296061.6923954,
+    "ast_hash": "413d6114772ab8558e224c4189564f77",
+    "semantic_hash": "413d6114772ab8558e224c4189564f77"
+  },
+  "apps/web/src/main.tsx": {
+    "mtime": 1784296061.6923954,
+    "ast_hash": "1e479be7cbe6d29eb41113b1e59dec3d",
+    "semantic_hash": "1e479be7cbe6d29eb41113b1e59dec3d"
+  },
+  "apps/web/tsconfig.json": {
+    "mtime": 1784296061.6923954,
+    "ast_hash": "a62860596d03e105760bdd29663d551b",
+    "semantic_hash": "a62860596d03e105760bdd29663d551b"
+  },
+  "apps/web/vite.config.ts": {
+    "mtime": 1784296061.6923954,
+    "ast_hash": "88498589b07700189c29b72d89ec9931",
+    "semantic_hash": "88498589b07700189c29b72d89ec9931"
+  },
+  "package.json": {
+    "mtime": 1784296061.6937695,
+    "ast_hash": "2976af11bc9c26c14747507326f2f8b0",
+    "semantic_hash": "2976af11bc9c26c14747507326f2f8b0"
+  },
+  "reports/security/voice-2026-07-15/metrics.json": {
+    "mtime": 1784296061.69454,
+    "ast_hash": "ca99745db258337979eaac0a77ffd1d9",
+    "semantic_hash": "ca99745db258337979eaac0a77ffd1d9"
+  },
+  "scripts/doctor.mjs": {
+    "mtime": 1784296061.69454,
+    "ast_hash": "c4282721799207bcfa24b938364f53bb",
+    "semantic_hash": "c4282721799207bcfa24b938364f53bb"
+  },
+  "scripts/doctor.ps1": {
+    "mtime": 1784296061.694848,
+    "ast_hash": "207c9c0cd5279eba4a850c889a0e26c2",
+    "semantic_hash": "207c9c0cd5279eba4a850c889a0e26c2"
+  },
+  "scripts/doctor.sh": {
+    "mtime": 1784296061.694848,
+    "ast_hash": "552727a82ed8d7af68bd7df88006a825",
+    "semantic_hash": "552727a82ed8d7af68bd7df88006a825"
+  },
+  "scripts/setup-linux.sh": {
+    "mtime": 1784296061.694848,
+    "ast_hash": "78a49da433a05514ad5c89e8cf16b02a",
+    "semantic_hash": "78a49da433a05514ad5c89e8cf16b02a"
+  },
+  "scripts/setup-windows.ps1": {
+    "mtime": 1784296061.694848,
+    "ast_hash": "ab13683c6bf21a9a67d494122484380b",
+    "semantic_hash": "ab13683c6bf21a9a67d494122484380b"
+  },
+  "scripts/start-alfred.ps1": {
+    "mtime": 1784296061.694848,
+    "ast_hash": "79aadee3ceb074c1fa162a73ff62901a",
+    "semantic_hash": "79aadee3ceb074c1fa162a73ff62901a"
+  },
+  "scripts/start-alfred.sh": {
+    "mtime": 1784296061.694848,
+    "ast_hash": "7accaa75d242542eb5e597195036b267",
+    "semantic_hash": "7accaa75d242542eb5e597195036b267"
+  },
+  "scripts/start-windows.ps1": {
+    "mtime": 1784296061.694848,
+    "ast_hash": "33d10de7745da756065421e2fe68199c",
+    "semantic_hash": "33d10de7745da756065421e2fe68199c"
+  },
+  "scripts/stop-alfred.ps1": {
+    "mtime": 1784296061.694848,
+    "ast_hash": "b3735e06f5355fcedbab8726960e84fd",
+    "semantic_hash": "b3735e06f5355fcedbab8726960e84fd"
+  },
+  "scripts/stop-alfred.sh": {
+    "mtime": 1784296061.694848,
+    "ast_hash": "7c1b6155c3feaf639816b16af164cca6",
+    "semantic_hash": "7c1b6155c3feaf639816b16af164cca6"
+  }
+}

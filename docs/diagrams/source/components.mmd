@@ -1,0 +1,9 @@
+flowchart LR
+    route[Rutas / Controllers]
+    service[Servicios]
+    repository[Repositorios / ORM]
+    database[(Base de datos)]
+
+    route --> service
+    service --> repository
+    repository --> database

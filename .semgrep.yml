@@ -1,0 +1,20 @@
+rules:
+  - id: facbgnto-dangerous-eval
+    message: Evita eval() con entradas no confiables.
+    severity: ERROR
+    languages: [javascript, typescript]
+    pattern: eval(...)
+
+  - id: facbgnto-command-exec
+    message: Revisa ejecución de comandos por posible command injection.
+    severity: WARNING
+    languages: [javascript, typescript]
+    pattern-either:
+      - pattern: child_process.exec(...)
+      - pattern: $CP.exec(...)
+
+  - id: facbgnto-sequelize-raw-query
+    message: Revisa SQL raw y exige bind/replacements.
+    severity: WARNING
+    languages: [javascript, typescript]
+    pattern: $DB.query($QUERY, ...)

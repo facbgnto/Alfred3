@@ -1,0 +1,22 @@
+erDiagram
+    TENANT ||--o{ USER : contains
+    TENANT ||--o{ RESOURCE : owns
+    USER ||--o{ RESOURCE : creates
+
+    TENANT {
+        bigint id PK
+        string name
+    }
+
+    USER {
+        bigint id PK
+        bigint tenant_id FK
+        string email
+    }
+
+    RESOURCE {
+        bigint id PK
+        bigint tenant_id FK
+        bigint created_by FK
+        string name
+    }

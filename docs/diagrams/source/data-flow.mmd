@@ -1,0 +1,13 @@
+flowchart LR
+    user[Usuario]
+    ui[Interfaz]
+    api[API]
+    auth[Autenticación]
+    db[(Base de datos)]
+    audit[(Auditoría)]
+
+    user --> ui
+    ui --> api
+    api --> auth
+    api --> db
+    api --> audit

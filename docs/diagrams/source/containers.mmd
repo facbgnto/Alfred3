@@ -1,0 +1,11 @@
+flowchart TB
+    user[Usuario]
+    frontend[Frontend]
+    api[API / Backend]
+    db[(Base de datos)]
+    external[Sistema externo]
+
+    user --> frontend
+    frontend -->|HTTPS / JSON| api
+    api --> db
+    api --> external
