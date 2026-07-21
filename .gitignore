@@ -1,8 +1,17 @@
 node_modules/
 dist/
 apps/*/dist/
+
+# Assets binarios de VAD (modelo Silero ONNX + runtime WASM), regenerados por
+# `npm install` via apps/web/scripts/copy-vad-assets.mjs. No se comitean.
+apps/web/public/vad/
 .venv/
 apps/voice-service/.venv/
+apps/voice-service/.venv-xtts/
+
+# Muestras de voz autorizadas para clonado XTTS: son datos personales, nunca se comitean.
+apps/voice-service/xtts-samples/*
+!apps/voice-service/xtts-samples/.gitkeep
 apps/voice-service/voices/
 __pycache__/
 *.pyc

@@ -1,0 +1,34 @@
+# Dependencias OPCIONALES para XTTS v2 (clonado de voz local). Instalar en un venv
+# SEPARADO del principal (.venv-xtts, no .venv): coqui-tts arrastra torch/transformers
+# pesados que no tiene sentido cargar en el proceso principal de Piper/faster-whisper.
+#
+#   python3 -m venv apps/voice-service/.venv-xtts
+#   apps/voice-service/.venv-xtts/bin/pip install -r apps/voice-service/requirements-xtts.txt
+#   apps/voice-service/.venv-xtts/bin/pip install torch torchaudio torchcodec --index-url https://download.pytorch.org/whl/cpu
+#
+# (torch/torchaudio/torchcodec van aparte porque hay que elegir el indice CPU o CUDA
+# segun tu hardware -- ver README de PyTorch. Sin GPU NVIDIA, usar el indice /cpu de
+# arriba.)
+#
+# Bugs reales encontrados y resueltos al armar esto (Python 3.14, Linux, sin GPU):
+#
+# 1. El paquete `xtts-api-server` de PyPI fija `coqui-tts==0.24.1`, que no tiene rueda
+#    para Python >=3.13. Por eso NO se usa ese paquete: en su lugar,
+#    apps/voice-service/xtts_server/main.py es un wrapper FastAPI propio y minimo sobre
+#    `coqui-tts` directo, con el mismo contrato HTTP (/tts_to_audio/, /speakers_list)
+#    que ya espera XTTSVoiceProvider.ts.
+# 2. `coqui-tts` no fija tope superior en `transformers` (declara `transformers>=4.57`),
+#    y la version mas nueva (transformers 5.x) le rompe un import interno
+#    (`isin_mps_friendly` fue removido/renombrado). Se fija `transformers==4.57.6`
+#    (ultima 4.x) mas abajo.
+# 3. Con torch >=2.9 coqui-tts pide ademas `torchcodec` para IO de audio (no lo declara
+#    como dependencia dura); instalarlo aparte con el mismo indice CPU.
+#
+# Verificado en este repo: con esta receta, XTTS v2 descarga el modelo (~1.9GB, una sola
+# vez), carga y sintetiza correctamente. En este hardware (12 nucleos, sin GPU NVIDIA):
+# ~15s de sintesis por oracion corta. Uso opcional, no default para conversacion en
+# vivo -- ver docs/VOICE_PROVIDERS.md.
+coqui-tts
+transformers==4.57.6
+fastapi
+uvicorn[standard]

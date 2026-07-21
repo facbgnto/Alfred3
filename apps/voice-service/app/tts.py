@@ -7,9 +7,13 @@ from pathlib import Path
 
 import pyttsx3
 
+from .config import settings
+
 VOICES_DIR = Path(__file__).resolve().parent.parent / "voices"
-PIPER_MODEL = Path(os.environ.get("VOICE_TTS_PIPER_MODEL", VOICES_DIR / "es_ES-davefx-medium.onnx"))
-PITCH_SHIFT_SEMITONES = float(os.environ.get("VOICE_TTS_PITCH_SHIFT", "0"))
+_configured_model = Path(settings.piper_model_path)
+# La ruta puede venir absoluta o relativa a apps/voice-service (convencion de .env).
+PIPER_MODEL = _configured_model if _configured_model.is_absolute() else VOICES_DIR.parent / _configured_model
+PITCH_SHIFT_SEMITONES = settings.pitch_shift_semitones
 
 
 def _pitch_shift_wav(wav_bytes: bytes, semitones: float) -> bytes:

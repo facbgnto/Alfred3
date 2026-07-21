@@ -15,6 +15,7 @@ import webrtcvad
 from app.config import settings
 from app.transcriber import get_transcriber
 from app.tts import speak
+from app.wakeword import WakeWordDetector
 
 FRAME_MS = 30
 FRAME_SAMPLES = settings.sample_rate * FRAME_MS // 1000
@@ -64,8 +65,13 @@ def main() -> None:
     global awake_until, cooldown_until
 
     wake_regex = wake_pattern()
+    wake_detector = WakeWordDetector()
     print("ALFRED Voice Engine escuchando. Ctrl+C para salir.")
     print(f"Filtro de ruido RMS: {settings.min_rms} | VAD: equilibrado | Wake word: {settings.wake_words}")
+    if wake_detector.available:
+        print("Deteccion de wake word: openWakeWord (acustica, sin transcribir).")
+    else:
+        print("Deteccion de wake word: por transcripcion (legado).")
     publish_state("wake_listening", "microphone-listener-started")
 
     ring: collections.deque[bytes] = collections.deque(maxlen=8)
@@ -92,6 +98,29 @@ def main() -> None:
                 silence_ms = 0
                 voiced_ms = 0
                 continue
+
+            if wake_detector.available:
+                score = wake_detector.score(raw)
+                already_awake = time.time() < awake_until
+                if score >= settings.wake_word_threshold and not already_awake:
+                    wake_detector.reset()
+                    ring.clear()
+                    frames = []
+                    speaking = False
+                    silence_ms = 0
+                    voiced_ms = 0
+                    awake_until = time.time() + settings.awake_timeout
+                    print(f"ALFRED: A su servicio, señor. (wake word acustico, score={score:.2f})")
+                    publish_state("speaking", "wake-acknowledgement")
+                    speak("A su servicio, señor.")
+                    publish_state("listening", "conversation-active")
+                    cooldown_until = time.time() + settings.post_tts_cooldown_ms / 1000
+                    continue
+                if not already_awake:
+                    # openWakeWord ya cubre la deteccion de la palabra de activacion sobre
+                    # audio crudo: mientras este dormido, no vale la pena acumular audio
+                    # ni gastar CPU transcribiendo con Whisper solo para buscar "alfred".
+                    continue
 
             level = rms_level(raw)
             has_energy = level >= settings.min_rms

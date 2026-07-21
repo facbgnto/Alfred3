@@ -1,0 +1,23 @@
+# Dependencias OPCIONALES para wake word real (openWakeWord) en microphone_listener.py.
+#
+# openwakeword declara tflite-runtime como dependencia obligatoria en Linux, pero esa
+# rueda no existe para muchas combinaciones de Python/arquitectura (Raspberry Pi OS con
+# Python nuevo incluido) y hace fallar `pip install` aunque nunca se use ese backend.
+# Alfred solo usa el backend ONNX (inference_framework="onnx" en app/wakeword.py), que
+# NO importa tflite_runtime en absoluto, asi que instalamos sin sus dependencias
+# declaradas y las ponemos manualmente:
+#
+#   pip install onnxruntime tqdm scipy scikit-learn requests
+#   pip install --no-deps openwakeword==0.6.0
+#
+# Verificado en este repo (Python 3.14, Linux): con esos dos comandos openWakeWord
+# importa y corre inferencia ONNX correctamente sin necesitar tflite-runtime.
+#
+# Si falla igual (por ejemplo, sin internet para descargar los modelos .onnx en el
+# primer arranque), Alfred no se rompe: el wake word cae automaticamente a la
+# deteccion por transcripcion que ya existia.
+onnxruntime>=1.10.0,<2
+tqdm>=4.0,<5.0
+scipy>=1.3,<2
+scikit-learn>=1,<2
+requests>=2.0,<3

@@ -12,6 +12,7 @@ import {
   VolumeX,
 } from 'lucide-react';
 import { VoiceDiagnosticsPanel } from './features/voice/components/VoiceDiagnosticsPanel';
+import { VoiceSettingsPanel } from './features/voice/components/VoiceSettingsPanel';
 import { cancelVoice, clearMemory, fetchVoiceDiagnostics } from './features/voice/services/voiceApi';
 import { useVoiceRecorder } from './features/voice/hooks/useVoiceRecorder';
 import type { VoiceDiagnostics } from './features/voice/types/voice';
@@ -35,7 +36,7 @@ const stateLabels: Record<string, string> = {
 };
 
 export default function App() {
-  const { connected, state, lastEvent, lastReason } = useAlfredSocket();
+  const { connected, state, lastEvent, lastReason, stopPlayback } = useAlfredSocket();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Msg[]>([
     { role: 'assistant', text: 'Todos los sistemas estan preparados, senor.' },
@@ -43,13 +44,29 @@ export default function App() {
   const [busy, setBusy] = useState(false);
   const [muted, setMuted] = useState(false);
   const [listeningEnabled, setListeningEnabled] = useState(false);
+  const [bargeInEnabled, setBargeInEnabled] = useState(true);
+  const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const [diagnostics, setDiagnostics] = useState<VoiceDiagnostics | null>(null);
   const [diagnosticsLoading, setDiagnosticsLoading] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
-  const recorder = useVoiceRecorder(result => {
-    if (result.text) setMessages(current => [...current, { role: 'user', text: result.text }]);
-    if (result.response) setMessages(current => [...current, { role: 'assistant', text: result.response }]);
-  });
+
+  function handleBargeIn() {
+    stopPlayback();
+    void cancelVoice('barge-in');
+  }
+
+  const recorder = useVoiceRecorder(
+    result => {
+      if (result.text) setMessages(current => [...current, { role: 'user', text: result.text }]);
+      if (result.response) setMessages(current => [...current, { role: 'assistant', text: result.response }]);
+    },
+    {
+      continuous: listeningEnabled,
+      alfredState: state,
+      bargeInEnabled: listeningEnabled && bargeInEnabled,
+      onBargeIn: handleBargeIn,
+    },
+  );
 
   useEffect(() => {
     let disposed = false;
@@ -80,18 +97,11 @@ export default function App() {
     node.scrollTop = node.scrollHeight;
   }, [messages]);
 
-  useEffect(() => {
-    if (!listeningEnabled) return;
-    if (!connected) return;
-    if (recorder.recording || recorder.processing) return;
-    if (state === 'speaking' || state === 'thinking' || state === 'transcribing' || state === 'processing') return;
-
-    const timeout = setTimeout(() => {
-      void recorder.start();
-    }, 450);
-
-    return () => clearTimeout(timeout);
-  }, [connected, listeningEnabled, recorder, state]);
+  function toggleContinuousListening() {
+    const next = !listeningEnabled;
+    setListeningEnabled(next);
+    if (next) void recorder.start();
+  }
 
   async function send() {
     const text = input.trim();
@@ -165,7 +175,7 @@ export default function App() {
           </div>
 
           <div className="voice-controls" aria-label="Controles de voz">
-            <button type="button" onClick={() => setListeningEnabled(value => !value)}>
+            <button type="button" onClick={toggleContinuousListening}>
               {listeningEnabled ? <Mic size={17} /> : <MicOff size={17} />}
               {listeningEnabled ? 'Escucha continua' : 'Activar escucha'}
             </button>
@@ -186,12 +196,27 @@ export default function App() {
             <button
               type="button"
               disabled={!busy && state !== 'speaking' && state !== 'thinking'}
-              onClick={() => void cancelVoice('ui-stop')}
+              onClick={() => {
+                stopPlayback();
+                void cancelVoice('ui-stop');
+              }}
             >
               <Square size={17} />
               Detener
             </button>
+            <label className="barge-in-toggle">
+              <input
+                type="checkbox"
+                checked={bargeInEnabled}
+                onChange={event => setBargeInEnabled(event.target.checked)}
+              />
+              Permitir interrumpir a Alfred
+            </label>
+            <button type="button" onClick={() => setShowVoiceSettings(value => !value)}>
+              {showVoiceSettings ? 'Ocultar ajustes de voz' : 'Ajustes de voz'}
+            </button>
           </div>
+          {showVoiceSettings ? <VoiceSettingsPanel /> : null}
           {recorder.error ? <div className="inline-error" role="alert">{recorder.error}</div> : null}
           <div className="listen-status" aria-live="polite">
             <span>

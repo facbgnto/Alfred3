@@ -31,10 +31,61 @@ export type VoiceDiagnostics = {
   config: {
     sttProvider: string;
     ttsProvider: string;
+    ttsFallbackProvider?: string;
+    voiceMode?: string;
+    cacheEnabled?: boolean;
+    continuousConversation?: boolean;
     ollamaModel: string;
     ollamaVoiceModel: string;
     wakeWordEnabled: boolean;
     vadEnabled: boolean;
     bargeInEnabled: boolean;
   };
+  cache?: { entries: number; usedBytes: number };
+  metrics?: {
+    sampleSize: number;
+    interruptions: number;
+    cacheHits: number;
+    fallbacksUsed: number;
+    avgSttLatencyMs?: number;
+    avgLlmFirstTokenMs?: number;
+    avgTtsFirstAudioMs?: number;
+    avgTotalResponseMs?: number;
+  };
+};
+
+export type VoiceMode =
+  | 'normal'
+  | 'conversation'
+  | 'programming'
+  | 'explanation'
+  | 'navigation'
+  | 'reminder'
+  | 'alarm'
+  | 'music'
+  | 'error'
+  | 'celebration';
+
+export type VoiceSettings = {
+  enabled: boolean;
+  ttsProvider: string;
+  ttsFallbackProvider: string;
+  ttsVoice: string;
+  ttsSpeed: number;
+  ttsLanguage: string;
+  mode: VoiceMode;
+  cacheEnabled: boolean;
+  continuousConversation: boolean;
+  bargeInEnabled: boolean;
+  volume: number;
+};
+
+export type VoiceProvidersResponse = {
+  stt: { active: string; providers: Array<Record<string, unknown>>; fallbackEnabled: boolean };
+  tts: { active: string; fallback: string; providers: Array<{ name: string; configured: boolean }> };
+};
+
+export type VoiceVoicesResponse = {
+  active: { provider: string; voiceId: string };
+  [provider: string]: unknown;
 };

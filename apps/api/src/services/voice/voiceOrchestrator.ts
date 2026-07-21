@@ -7,7 +7,9 @@ import { executeTool } from '../tools/registry.js';
 import { transcribeAudio } from './sttClient.js';
 import { voiceSessionManager } from './session/voiceSessionManager.js';
 import { cancelTts, speakSentence } from './tts/ttsClient.js';
-import { extractCompleteSentences } from './tts/sentenceSplitter.js';
+import { extractCompleteSentences, forceFlushIfTooLong } from './tts/sentenceSplitter.js';
+import { voiceModePresets } from './config.js';
+import { voiceSettingsStore } from './settingsStore.js';
 
 type ProcessVoiceInput =
   | { kind: 'text'; text: string; sessionId?: string }
@@ -128,6 +130,13 @@ export async function processVoiceTurn(input: ProcessVoiceInput) {
           const { sentences, rest } = extractCompleteSentences(pendingSpeech);
           pendingSpeech = rest;
           for (const sentence of sentences) enqueueSentence(sentence);
+
+          const preset = voiceModePresets[voiceSettingsStore.get().mode];
+          const overflow = forceFlushIfTooLong(pendingSpeech, preset.maxSegmentChars, preset.minSegmentChars);
+          if (overflow.segment) {
+            enqueueSentence(overflow.segment);
+            pendingSpeech = overflow.rest;
+          }
         }
       }
     } catch {
@@ -168,6 +177,8 @@ export async function processVoiceTurn(input: ProcessVoiceInput) {
 
     if (voiceSessionManager.isActive(session.requestId)) {
       await speechChain;
+      voiceSessionManager.markMetric(session.requestId, 'ttsTotalMs', performance.now() - ttsStarted);
+      voiceSessionManager.markMetric(session.requestId, 'segments', sentenceIndex);
       eventBus.emit('tts.completed', {
         requestId: session.requestId,
         ttsTotalMs: Math.round(performance.now() - ttsStarted),

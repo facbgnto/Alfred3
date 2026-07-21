@@ -45,9 +45,9 @@ class VoiceSessionManager {
     eventBus.emit('voice.session.state', { requestId, state, reason });
   }
 
-  markMetric(requestId: string, key: keyof VoiceMetrics, value: number) {
+  markMetric<K extends keyof VoiceMetrics>(requestId: string, key: K, value: VoiceMetrics[K]) {
     if (!this.isActive(requestId) || !this.active) return;
-    this.active.metrics[key] = Math.round(value);
+    this.active.metrics[key] = (typeof value === 'number' ? Math.round(value) : value) as VoiceMetrics[K];
     eventBus.emit('voice.metrics.updated', {
       requestId,
       metrics: this.active.metrics,

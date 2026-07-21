@@ -131,5 +131,5 @@ export function useAlfredSocket() {
     };
   }, []);
 
-  return { connected, state, lastEvent, lastReason };
+  return { connected, state, lastEvent, lastReason, stopPlayback };
 }

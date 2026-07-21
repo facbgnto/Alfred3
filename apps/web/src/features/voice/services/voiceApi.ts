@@ -1,4 +1,4 @@
-import type { VoiceDiagnostics } from '../types/voice';
+import type { VoiceDiagnostics, VoiceSettings, VoiceProvidersResponse, VoiceVoicesResponse } from '../types/voice';
 
 export async function fetchVoiceDiagnostics(): Promise<VoiceDiagnostics> {
   const response = await fetch('/api/voice/diagnostics');
@@ -35,4 +35,48 @@ export async function processVoiceAudio(blob: Blob) {
     throw new Error(body?.error?.message ?? `Voice process respondio ${response.status}`);
   }
   return response.json() as Promise<{ text: string; response: string }>;
+}
+
+export async function fetchVoiceSettings(): Promise<VoiceSettings> {
+  const response = await fetch('/api/voice/settings');
+  if (!response.ok) throw new Error(`Ajustes de voz respondio ${response.status}`);
+  return response.json();
+}
+
+export async function updateVoiceSettings(partial: Partial<VoiceSettings>): Promise<VoiceSettings> {
+  const response = await fetch('/api/voice/settings', {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(partial),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body?.error?.message ?? `No se pudieron guardar los ajustes (${response.status}).`);
+  }
+  return response.json();
+}
+
+export async function fetchVoiceProviders(): Promise<VoiceProvidersResponse> {
+  const response = await fetch('/api/voice/providers');
+  if (!response.ok) throw new Error(`Proveedores de voz respondio ${response.status}`);
+  return response.json();
+}
+
+export async function fetchVoiceVoices(): Promise<VoiceVoicesResponse> {
+  const response = await fetch('/api/voice/voices');
+  if (!response.ok) throw new Error(`Voces respondio ${response.status}`);
+  return response.json();
+}
+
+export async function previewVoice(text?: string): Promise<{ audioBase64: string; audioMimeType: string; provider: string }> {
+  const response = await fetch('/api/voice/preview', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(text ? { text } : {}),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body?.error?.message ?? `Prueba de voz respondio ${response.status}`);
+  }
+  return response.json();
 }

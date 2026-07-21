@@ -269,6 +269,82 @@ h1 b {
   text-align: center;
 }
 
+.barge-in-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #7f949f;
+  font-size: 11px;
+}
+
+.voice-settings {
+  margin: 0 0 18px;
+  padding: 16px;
+  border: 1px solid #1a3746;
+  background: #0b1319;
+}
+
+.voice-settings h2 {
+  font-family: Orbitron, sans-serif;
+  font-size: 11px;
+  letter-spacing: .18em;
+  color: #7795a5;
+  margin: 0 0 16px;
+}
+
+.voice-settings .row {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) minmax(160px, 220px);
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  color: #9eb5c2;
+  font-size: 12px;
+}
+
+.voice-settings select,
+.voice-settings input[type='range'] {
+  width: 100%;
+  background: #080d12;
+  border: 1px solid #1a3746;
+  color: #dce7ed;
+}
+
+.voice-settings select {
+  min-height: 34px;
+  padding: 0 8px;
+}
+
+.voice-settings-saving {
+  color: #d0a55d;
+  font-size: 11px;
+  margin-top: 6px;
+}
+
+.voice-settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.voice-settings-actions button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid #2c5568;
+  background: #172b36;
+  color: #d0a55d;
+  cursor: pointer;
+}
+
+.voice-settings.loading,
+.voice-settings.error {
+  color: #7f949f;
+  font-size: 12px;
+  text-align: center;
+  padding: 16px;
+}
+
 .listen-status {
   display: grid;
   grid-template-columns: 1fr minmax(120px, 220px);

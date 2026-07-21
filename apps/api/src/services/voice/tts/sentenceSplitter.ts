@@ -22,6 +22,23 @@ export function extractCompleteSentences(buffer: string): { sentences: string[];
   return { sentences, rest: buffer.slice(start) };
 }
 
+/**
+ * Si el buffer aun sin puntuacion de cierre ya supero maxChars (el LLM sigue
+ * generando una oracion muy larga), corta en el ultimo espacio disponible para
+ * no acumular texto indefinidamente antes de hablar. Evita cortes por debajo de
+ * minChars para no producir audio entrecortado.
+ */
+export function forceFlushIfTooLong(buffer: string, maxChars: number, minChars: number): { segment?: string; rest: string } {
+  if (buffer.length <= maxChars) return { rest: buffer };
+
+  const cut = buffer.lastIndexOf(' ', maxChars);
+  const splitAt = cut > minChars ? cut : maxChars;
+  const segment = buffer.slice(0, splitAt).trim();
+  const rest = buffer.slice(splitAt).trim();
+  if (!segment) return { rest: buffer };
+  return { segment, rest };
+}
+
 export function splitIntoSpeakableSentences(text: string, minLength = 32): string[] {
   const normalized = text.replace(/\s+/g, ' ').trim();
   if (!normalized) return [];

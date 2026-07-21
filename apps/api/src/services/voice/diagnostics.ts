@@ -3,6 +3,9 @@ import { env } from '../../config/env.js';
 import { ollamaHealth } from '../ollama.js';
 import { sttHealth } from './sttClient.js';
 import { ttsHealth } from './tts/ttsClient.js';
+import { audioCacheStats } from './VoiceManager.js';
+import { metricsSummary } from './metricsHistory.js';
+import { voiceSettingsStore } from './settingsStore.js';
 
 type RecentError = {
   timestamp: string;
@@ -26,6 +29,7 @@ export function recordVoiceError(service: string, event: string, error: unknown)
 
 export async function voiceDiagnostics() {
   const [stt, tts, ollama] = await Promise.all([sttHealth(), ttsHealth(), ollamaHealth()]);
+  const settings = voiceSettingsStore.get();
 
   return {
     status: stt.status === 'ok' && ollama.status === 'ok' ? 'ok' : 'degraded',
@@ -36,18 +40,24 @@ export async function voiceDiagnostics() {
     },
     config: {
       sttProvider: env.VOICE_STT_PROVIDER,
-      ttsProvider: env.VOICE_TTS_PROVIDER,
+      ttsProvider: settings.ttsProvider,
+      ttsFallbackProvider: settings.ttsFallbackProvider,
+      voiceMode: settings.mode,
+      cacheEnabled: settings.cacheEnabled,
+      continuousConversation: settings.continuousConversation,
       ollamaModel: env.OLLAMA_CHAT_MODEL,
       ollamaVoiceModel: env.OLLAMA_VOICE_MODEL,
       wakeWordEnabled: env.VOICE_WAKE_WORD_ENABLED,
       vadEnabled: env.VOICE_VAD_ENABLED,
-      bargeInEnabled: env.VOICE_BARGE_IN_ENABLED,
+      bargeInEnabled: settings.bargeInEnabled,
       ports: {
         api: env.API_PORT,
         sttBaseUrl: env.VOICE_STT_BASE_URL,
         ollamaBaseUrl: env.OLLAMA_BASE_URL,
       },
     },
+    cache: audioCacheStats(),
+    metrics: metricsSummary(),
     host: {
       platform: process.platform,
       arch: process.arch,

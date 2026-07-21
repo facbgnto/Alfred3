@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import type { FastifyInstance, FastifyReply } from 'fastify';
 import { z } from 'zod';
+import { env } from '../config/env.js';
 import { processMessage } from '../core/assistant.js';
 import { getAgent, listAgents } from '../core/agents.js';
 import { stateMachine } from '../core/stateMachine.js';
@@ -14,6 +15,10 @@ import { clearConversationMemory, getConversationContext } from '../services/mem
 import { clearTraces, listTraces } from '../services/traces/traceStore.js';
 import { executeTool, listTools } from '../services/tools/registry.js';
 import { getSkills } from '../skills/registry.js';
+import { listProviders, synthesizeSpeech, clearAudioCache } from '../services/voice/VoiceManager.js';
+import { voiceSettingsStore, type VoiceSettings } from '../services/voice/settingsStore.js';
+import { getMetricsHistory, metricsSummary } from '../services/voice/metricsHistory.js';
+import { voiceModePresets } from '../services/voice/config.js';
 
 const voiceStateSchema = z.enum([
   'offline',
@@ -29,6 +34,11 @@ const voiceStateSchema = z.enum([
   'interrupted',
   'error',
 ]);
+
+// Limite mas estricto para rutas que golpean STT/TTS/LLM (CPU/red/costo), por
+// encima del limite global registrado en server.ts.
+const expensiveRateLimit = { config: { rateLimit: { max: 20, timeWindow: '1 minute' } } };
+const settingsRateLimit = { config: { rateLimit: { max: 30, timeWindow: '1 minute' } } };
 
 function sendVoiceError(reply: FastifyReply, error: unknown) {
   const response = voiceErrorResponse(error);
@@ -61,7 +71,7 @@ export async function httpRoutes(app: FastifyInstance) {
     skills: getSkills(),
   }));
 
-  app.post('/api/chat', async (req, reply) => {
+  app.post('/api/chat', expensiveRateLimit, async (req, reply) => {
     const parsed = z
       .object({
         message: z.string().min(1),
@@ -139,14 +149,17 @@ export async function httpRoutes(app: FastifyInstance) {
     }
   });
 
-  app.get('/api/voice/providers', async () => ({
-    stt: getSttProviders(),
-    tts: {
-      active: 'pyttsx3',
-      providers: ['pyttsx3'],
-      fallbackEnabled: false,
-    },
-  }));
+  app.get('/api/voice/providers', async () => {
+    const settings = voiceSettingsStore.get();
+    return {
+      stt: getSttProviders(),
+      tts: {
+        active: settings.ttsProvider,
+        fallback: settings.ttsFallbackProvider,
+        providers: listProviders(),
+      },
+    };
+  });
 
   app.get('/api/voice/health', async () => voiceDiagnostics());
 
@@ -158,7 +171,89 @@ export async function httpRoutes(app: FastifyInstance) {
 
   app.get('/api/voice/diagnostics', async () => voiceDiagnostics());
 
-  app.post('/api/voice/transcribe', async (req, reply) => {
+  app.get('/api/voice/metrics', async (req, reply) => {
+    const parsed = z.object({ limit: z.coerce.number().int().min(1).max(50).default(20) }).safeParse(req.query);
+    if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
+    return { summary: metricsSummary(), recent: getMetricsHistory(parsed.data.limit) };
+  });
+
+  app.get('/api/voice/voices', async () => {
+    const settings = voiceSettingsStore.get();
+    return {
+      active: { provider: settings.ttsProvider, voiceId: settings.ttsVoice },
+      // Piper/pyttsx3 corren en el servicio local: la voz efectiva la decide ese
+      // proceso (modelo .onnx presente o fallback del sistema operativo).
+      piper: [{ id: env.VOICE_TTS_VOICE, label: 'Voz local (Piper/pyttsx3)' }],
+      openai: env.OPENAI_TTS_VOICE ? [{ id: env.OPENAI_TTS_VOICE, label: env.OPENAI_TTS_VOICE }] : [],
+      elevenlabs: env.ELEVENLABS_VOICE_ID ? [{ id: env.ELEVENLABS_VOICE_ID, label: env.ELEVENLABS_VOICE_ID }] : [],
+      cartesia: env.CARTESIA_VOICE_ID ? [{ id: env.CARTESIA_VOICE_ID, label: env.CARTESIA_VOICE_ID }] : [],
+      kokoro: [{ id: env.VOICE_TTS_VOICE, label: env.VOICE_TTS_VOICE }],
+      xtts: env.XTTS_SPEAKER_ID ? [{ id: env.XTTS_SPEAKER_ID, label: 'Muestra autorizada' }] : [],
+    };
+  });
+
+  const voiceSettingsSchema = z.object({
+    enabled: z.boolean().optional(),
+    ttsProvider: z.enum(['piper', 'pyttsx3', 'openai', 'elevenlabs', 'cartesia', 'kokoro', 'xtts']).optional(),
+    ttsFallbackProvider: z.enum(['piper', 'pyttsx3', 'openai', 'elevenlabs', 'cartesia', 'kokoro', 'xtts']).optional(),
+    ttsVoice: z.string().min(1).optional(),
+    ttsSpeed: z.coerce.number().min(0.5).max(2).optional(),
+    ttsLanguage: z.string().min(2).optional(),
+    mode: z.enum(Object.keys(voiceModePresets) as [keyof typeof voiceModePresets, ...Array<keyof typeof voiceModePresets>]).optional(),
+    cacheEnabled: z.boolean().optional(),
+    continuousConversation: z.boolean().optional(),
+    bargeInEnabled: z.boolean().optional(),
+    volume: z.coerce.number().min(0).max(1).optional(),
+  });
+
+  app.get('/api/voice/settings', async () => voiceSettingsStore.get());
+
+  app.put('/api/voice/settings', settingsRateLimit, async (req, reply) => {
+    const parsed = voiceSettingsSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
+    if (parsed.data.cacheEnabled === false) clearAudioCache();
+    return voiceSettingsStore.update(parsed.data as Partial<VoiceSettings>);
+  });
+
+  const previewText = 'Hola Felipe. Soy Alfred. Mi sistema de voz esta funcionando correctamente y estoy listo para ayudarte.';
+
+  app.post('/api/voice/preview', expensiveRateLimit, async (req, reply) => {
+    const parsed = z.object({ text: z.string().min(1).max(1000).optional() }).safeParse(req.body ?? {});
+    if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
+    try {
+      const result = await synthesizeSpeech(parsed.data.text ?? previewText, { requestId: 'preview' });
+      return {
+        ok: true,
+        provider: result.provider,
+        cacheHit: result.cacheHit,
+        audioBase64: result.audio.toString('base64'),
+        audioMimeType: result.mimeType,
+      };
+    } catch (error) {
+      req.log.error(error);
+      return sendVoiceError(reply, error);
+    }
+  });
+
+  app.post('/api/voice/synthesize', expensiveRateLimit, async (req, reply) => {
+    const parsed = z.object({ text: z.string().min(1).max(2000) }).safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
+    try {
+      const result = await synthesizeSpeech(parsed.data.text, { requestId: 'manual-synthesize' });
+      return {
+        ok: true,
+        provider: result.provider,
+        cacheHit: result.cacheHit,
+        audioBase64: result.audio.toString('base64'),
+        audioMimeType: result.mimeType,
+      };
+    } catch (error) {
+      req.log.error(error);
+      return sendVoiceError(reply, error);
+    }
+  });
+
+  app.post('/api/voice/transcribe', expensiveRateLimit, async (req, reply) => {
     try {
       let audio: Buffer;
       let filename = 'audio.wav';
@@ -199,7 +294,7 @@ export async function httpRoutes(app: FastifyInstance) {
     }
   });
 
-  app.post('/api/voice/process', async (req, reply) => {
+  app.post('/api/voice/process', expensiveRateLimit, async (req, reply) => {
     try {
       if (Buffer.isBuffer(req.body)) {
         return await processVoiceTurn({

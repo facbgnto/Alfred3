@@ -30,6 +30,12 @@ export interface VoiceMetrics {
   ttsFirstAudioMs?: number;
   ttsTotalMs?: number;
   totalResponseMs?: number;
+  ttsProvider?: string;
+  sttProvider?: string;
+  cacheHit?: boolean;
+  interrupted?: boolean;
+  fallbackUsed?: boolean;
+  segments?: number;
 }
 
 export interface Transcript {

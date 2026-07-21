@@ -54,18 +54,54 @@ export const envSchema = z.object({
   VOICE_VAD_PREBUFFER_MS: z.coerce.number().int().nonnegative().default(300),
   VOICE_VAD_POSTBUFFER_MS: z.coerce.number().int().nonnegative().default(200),
 
-  VOICE_TTS_PROVIDER: z.enum(['kokoro', 'piper', 'pyttsx3']).default('pyttsx3'),
+  VOICE_TTS_PROVIDER: z.enum(['kokoro', 'piper', 'pyttsx3', 'openai', 'elevenlabs', 'cartesia', 'xtts']).default('pyttsx3'),
   VOICE_TTS_VOICE: z.string().min(1).default('es_female'),
   VOICE_TTS_LANGUAGE: z.string().min(2).default('es'),
   VOICE_TTS_SPEED: z.coerce.number().positive().default(1.0),
   VOICE_TTS_STREAM: z.coerce.boolean().default(true),
-  VOICE_TTS_FALLBACK_PROVIDER: z.enum(['kokoro', 'piper', 'pyttsx3']).default('piper'),
+  VOICE_TTS_FALLBACK_PROVIDER: z.enum(['kokoro', 'piper', 'pyttsx3', 'openai', 'elevenlabs', 'cartesia', 'xtts']).default('piper'),
 
   VOICE_BARGE_IN_ENABLED: z.coerce.boolean().default(true),
   VOICE_STOP_COMMANDS: csv.default('detente,silencio,cancela,para'),
   VOICE_NOISE_SUPPRESSION: z.coerce.boolean().default(true),
   VOICE_ECHO_CANCELLATION: z.coerce.boolean().default(true),
   VOICE_AUTO_GAIN_CONTROL: z.coerce.boolean().default(true),
+
+  VOICE_MODE: z
+    .enum(['normal', 'conversation', 'programming', 'explanation', 'navigation', 'reminder', 'alarm', 'music', 'error', 'celebration'])
+    .default('conversation'),
+
+  VOICE_MIN_SEGMENT_CHARS: z.coerce.number().int().positive().default(35),
+  VOICE_MAX_SEGMENT_CHARS: z.coerce.number().int().positive().default(220),
+  VOICE_SEGMENT_TIMEOUT_MS: z.coerce.number().int().positive().default(350),
+
+  VOICE_CACHE: z.coerce.boolean().default(true),
+  VOICE_CACHE_TTL_HOURS: z.coerce.number().positive().default(168),
+  VOICE_CACHE_MAX_MB: z.coerce.number().positive().default(500),
+
+  // Proveedores en la nube: deshabilitados por defecto (sin API key => not_configured).
+  // Alfred es 100% local por decision de seguridad previa; estos quedan listos para
+  // activarse si en el futuro se decide sumar un proveedor cloud.
+  OPENAI_API_KEY: z.string().default(''),
+  OPENAI_TTS_MODEL: z.string().default(''),
+  OPENAI_TTS_VOICE: z.string().default(''),
+
+  ELEVENLABS_API_KEY: z.string().default(''),
+  ELEVENLABS_VOICE_ID: z.string().default(''),
+  ELEVENLABS_MODEL_ID: z.string().default('eleven_multilingual_v2'),
+  ELEVENLABS_STABILITY: z.coerce.number().min(0).max(1).default(0.5),
+  ELEVENLABS_SIMILARITY_BOOST: z.coerce.number().min(0).max(1).default(0.75),
+  ELEVENLABS_STYLE: z.coerce.number().min(0).max(1).default(0),
+  ELEVENLABS_SPEAKER_BOOST: z.coerce.boolean().default(true),
+  ELEVENLABS_OUTPUT_FORMAT: z.string().default('mp3_44100_128'),
+
+  CARTESIA_API_KEY: z.string().default(''),
+  CARTESIA_VOICE_ID: z.string().default(''),
+  CARTESIA_MODEL_ID: z.string().default('sonic-2'),
+
+  KOKORO_BASE_URL: z.string().default('http://127.0.0.1:8880'),
+  XTTS_BASE_URL: z.string().default('http://127.0.0.1:8020'),
+  XTTS_SPEAKER_ID: z.string().default(''),
 
   ALFRED_USER_NAME: z.string().default('Felipe'),
   ALFRED_ADDRESS: z.string().default('senor'),
